@@ -1,10 +1,6 @@
-## 欢迎一起研究bokeh
-
-一起学习bokeh
-
-### 第一章bokeh是做什么的
-bokeh就是一个可以自动生成js的工具
-### 举个例子
+# 一起学习bokeh
+Bokeh可以基于python自动生成js代码，用来展现各式各样的图形。当然也可以通过js来直接操控BokehJS，但是数据处理是python的强项。以下可以通过十分钟，教你用Bokeh画图。跟我一样，你只需要了解一点python语法。
+## Chapter One---Bokeh做了什么
 ```python
 # -*- coding: utf-8 -*-
 from bokeh.plotting import figure, output_file, show
@@ -132,7 +128,7 @@ print(script)
 print("---------------------------------------------")
 print(div)
 ```
-以上输出内容如下:
+    以上输出内容如下:
 ```html
 <script type="text/javascript">
     (function() {
@@ -213,35 +209,37 @@ with open('demo2.html', 'w') as f:
     f.write(html)
 
 ```
-通过以上可以大致了解到bokeh操控的就是js
+## Chapter Two---来绘制一个图
+### 第一步，准备数据源
+有两种数据源，ColumnDataSource和GeoJSONDataSource，分别用来存放一般图形数据和地图数据。先来看看ColumnDataSource，可以通过pandas的DateFrame来构建
 
-
-
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+### 第二步，准备画板
+figure函数或者Figure对象选用一个即可，获得Figure对象，之后的图形都是在该图形上叠加
+```python
+from bokeh.plotting import figure, Figure
+plot = figure(plot_width=400, plot_height=400)
+plot = Figure(plot_width=400, plot_height=400)
 ```
+### 第三步，画图
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+```python
 
-### Jekyll Themes
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/e271828182/BokehStudy/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+```
+### 第四步，增加js回调函数
 
-### Support or Contact
+## Chapter Three---在Jupyter上作图
+在Jupyter上使用Bokeh，除了可以更多人分享，还可以使用ipywidgets实现真正意义上的交互，可以在python代码中通过pandas过滤数据来更新页面，而不是一次性将数据写到html。
+首先需要执行output_notebook指定图形输出到jupyter
+```python
+from bokeh.io import output_notebook
+output_notebook()
+```
+安装ipywidgets
+```shell
+pip install ipywidgets
+jupyter nbextension enable --py widgetsnbextension
+```
+## Chapter Four---自定义对象
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+## Chapter Five---使用Bokeh server
