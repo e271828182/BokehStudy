@@ -1,6 +1,6 @@
 # 一起学习bokeh
 Bokeh可以基于python自动生成js代码，用来展现各式各样的图形。当然也可以通过js来直接操控BokehJS，但是数据处理是python的强项。以下可以通过十分钟，教你用Bokeh画图。跟我一样，你只需要了解一点python语法。
-## Chapter One---Bokeh做了什么
+## Chapter One    Bokeh做了什么
 ```python
 # -*- coding: utf-8 -*-
 from bokeh.plotting import figure, output_file, show
@@ -210,7 +210,7 @@ with open('demo2.html', 'w') as f:
     f.write(html)
 
 ```
-## Chapter Two---来绘制一个图
+## Chapter Two    来绘制一个图
 ### 第一步，准备数据源
 有两种数据源，ColumnDataSource和GeoJSONDataSource，分别用来存放一般图形数据和地图数据。先来看看ColumnDataSource，可以通过data参数接收一个dict对象，也可以通过pandas的DateFrame来构建。每个数据集都有名字，通过DateFrame创建则名字为其每列的名字，没有列名，则index为其列名（However, if the index name (or any subname of a MultiIndex) is None, then the CDS will have a column generically named index for the index）。
 有名字就可以让多个图形和工具共用同一份数据。
@@ -263,7 +263,7 @@ show(plot)
 
 ### 第九步，增加数据过滤
 
-## Chapter Three---在Jupyter上作图
+## Chapter Three    在Jupyter上作图
 在Jupyter上使用Bokeh，除了可以更多人分享，还可以使用ipywidgets实现真正意义上的交互，可以在python代码中通过pandas过滤数据来更新页面，而不是一次性将数据写到html。
 首先需要执行output_notebook指定图形输出到jupyter
 ```python
@@ -275,6 +275,6 @@ output_notebook()
 pip install ipywidgets
 jupyter nbextension enable --py widgetsnbextension
 ```
-## Chapter Four---自定义对象
+## Chapter Four    自定义对象
 
-## Chapter Five---使用Bokeh server
+## Chapter Five    使用Bokeh server
