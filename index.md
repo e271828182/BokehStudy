@@ -212,8 +212,8 @@ with open('demo2.html', 'w') as f:
 ```
 ## Chapter Two-来绘制一个图
 ### 第一步，准备数据源
-有两种数据源，ColumnDataSource和GeoJSONDataSource，分别用来存放一般图形数据和地图数据。先来看看ColumnDataSource，可以通过data参数接收一个dict对象，也可以通过pandas的DateFrame来构建。每个数据集都有名字，通过DateFrame创建则名字为其每列的名字，没有列名，则index为其列名（However, if the index name (or any subname of a MultiIndex) is None, then the CDS will have a column generically named index for the index）。
-有名字就可以让多个图形和工具共用同一份数据。
+有两种数据源，ColumnDataSource和GeoJSONDataSource，分别用来存放一般图形数据和地图数据。先来看看ColumnDataSource，可以通过data参数接收一个dict对象，也可以通过pandas的DateFrame来构建。每个数据集都指定key的名字，通过DateFrame创建则key为其每列的列名，没有列名，则index为其列名（However, if the index name (or any subname of a MultiIndex) is None, then the CDS will have a column generically named index for the index）。
+有了key就可以让多个图形和工具共用同一份数据。
 ```python
 from bokeh.models import ColumnDataSource
 
@@ -230,10 +230,13 @@ figure函数或者Figure对象选用一个即可，获得Figure对象，之后�
 ```python
 from bokeh.plotting import figure, Figure
 
-plot = figure(plot_width=400, plot_height=400)
-plot = Figure(plot_width=400, plot_height=400)
+p = figure(plot_width=400, plot_height=400)
+
+# p = Figure(plot_width=400, plot_height=400)
 ```
 ### 第三步，画图-Glyphs
+图形有很多种，点散点图（circle，square），折线图（Lines，multi_line）,矩形图（quad，rect），柱状图（vbar，hbar），多边形（patch，patches），椭圆（oval），ellipse（可以分别定义宽度的椭圆），图像（You can display images on Bokeh plots using the image(), image_rgba(), and image_url() glyph methods.），线段（segment），射线（ray），圆弧（arc，wedge，annular_wedge，annulus）
+可以将几种图叠加在一张图上，方法大同小异，以下以circle来展现下一般步骤
 两种形式，第一种是plot调用方法circle，可以指定source
 ```python
 p.circle(x='x_values', y='y_values', source=source, size=20, color='navy',alpha=0.5)
@@ -242,7 +245,7 @@ p.circle(x='x_values', y='y_values', source=source, size=20, color='navy',alpha=
 第二种先定义circle对象，再使用plot调用add_glyph时指定source
 ```python
 circle = Circle(x='x_values', y='y_values', fill_color='navy', size=20, fill_alpha=0.5)
-plot.add_glyph(source, circle)
+p.add_glyph(source, circle)
 ```
 两种方式，第一种比较简洁，第二种更具面向对象风格。第一种参数更加丰富，比如颜色可以传入line_color='red', fill_color='navy'，color='blue'。如果只指定color，则line_color和fill_color默认与color一样。如果单独指定line_color和fill_color，会覆盖color指定。第二种则没有color这个参数
 ### 第四步，展示
@@ -254,14 +257,73 @@ show(plot)
 当然也可以像第一章通过python的io操作或者output_file("Demo1.html")输出到文件。
 
 ### 第五步，增加布局
+可以同时画多个图形，然后根据布局来布置图形
 
 ### 第六步，增加Label
+通过LabelSet增加标签，source指定与之前一样，text为要显示的值
+这里有个小问题，显示内容不能格式化，所以要显示百分比之类的值，就需要在source里面埋相应的数据，然后在这里取出来。
+x_offset和y_offset分别来设置坐标位置偏移量
+```python
+from bokeh.models import LabelSet, Legend, ColumnDataSource
 
-### 第七步，增加Hover
+data = {'x_values': [1, 2, 3, 4, 5],
+        'y_values': [6, 7, 2, 3, 6],
+        'label_value': ["%d%%" % (100*y) for y in [6, 7, 2, 3, 6]]}
 
-### 第八步，增加Widgets
+source = ColumnDataSource(data=data)
+labels = LabelSet(x='x_values', y='y_values', x_offset=0, y_offset=10, text='label_value', source=source)
+p.add_layout(labels)
+```
+### 第七步，增加Legend
+第一种方式是直接画图时指定legend="xValue"，自动关联图形并提供小图标，然后可以根据p.legend获得并设置其他属性（p.legend.location可以接受枚举如"top_right"、"top_left"等，也可以接受元组指定像素位置）
+```pythom
+p.circle(x='x_values', y='y_values', source=source, size=20, color='navy',alpha=0.5, legend="xValue")
 
-### 第九步，增加数据过滤
+p.legend.location = (0, 300)
+p.legend.orientation = "horizontal"
+```
+第二种比较复杂，需要自己设置label和图标显示，还要与图形关联
+*（目前我还没有找出小图标的设置方法）*
+```python
+renderer = GlyphRenderer(glyph=circle)
+item = LegendItem(label="x_values", renderers=[renderer])
+legend = Legend(items=[item])
+p.add_layout(legend)
+```
+### 第八步，增加Hover
+hover在图形中属于tools的一种，增加hover也有两种方式
+第一种是先在Figure中指定添加tools="hover"，然后通过p.select_one(HoverTool)函数找到要设置的hover，设置hover.tooltips里面取值。取值方式有两种，一种是使用$符号，用于获取整个图形的属性，比如鼠标x，y的位置等。另一种是@符号取值，值的来源是sources中data的key,取出来的值后面跟{}可以设置数据格式。
+注意，该取值是在js里面获取变量值的方式，所以这只能取值，而不能在python里面做算数运算。
+```python
+p = Figure(plot_width=400, plot_height=400, tools="hover")
+
+hover = p.select_one(HoverTool)
+hover.point_policy = "follow_mouse"
+hover.tooltips = [
+("x轴", "@x_values"),
+("y值", "@y_values{0.2f}" )]
+```
+第二种方式是先定义hover对象，在加入到图形中
+```python
+
+hover = HoverTool(
+        tooltips=[
+            ("x轴", "@x_values"),
+            ("y值", "@y_values{0.2f}" )
+            ],
+        mode = "mouse",
+        formatters={
+        'date'      : 'datetime', # use 'datetime' formatter for 'date' field
+        'adj close' : 'printf',   # use 'printf' formatter for 'adj close' field
+        }
+)
+
+p = Figure(plot_width=400, plot_height=400, tools=[hover])
+```
+
+### 第九步，增加Widgets
+
+### 第十步，增加数据过滤
 
 ## Chapter Three-在Jupyter上作图
 在Jupyter上使用Bokeh，除了可以更多人分享，还可以使用ipywidgets实现真正意义上的交互，可以在python代码中通过pandas过滤数据来更新页面，而不是一次性将数据写到html。
