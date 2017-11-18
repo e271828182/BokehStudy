@@ -1,8 +1,6 @@
-## Welcome to GitHub Pages
+## 欢迎一起研究bokeh
 
-You can use the [editor on GitHub](https://github.com/e271828182/BokehStudy/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+一起学习bokeh
 
 ### Markdown
 
