@@ -1,0 +1,7 @@
+.idea/
+.settings/
+.pydevproject
+.project
+*.iml
+*.ipr
+*.iws
