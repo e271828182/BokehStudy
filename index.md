@@ -225,7 +225,7 @@ source = ColumnDataSource(data=data)
 source = ColumnDataSource(df)
 ```
 
-### 第二步，准备画板
+### 第二步，准备画板Figure
 figure函数或者Figure对象选用一个即可，获得Figure对象，之后的图形都是在该图形上叠加
 ```python
 from bokeh.plotting import figure, Figure
@@ -233,7 +233,7 @@ from bokeh.plotting import figure, Figure
 plot = figure(plot_width=400, plot_height=400)
 plot = Figure(plot_width=400, plot_height=400)
 ```
-### 第三步，画图
+### 第三步，画图Glyphs
 两种形式，第一种是plot调用方法circle，可以指定source
 ```python
 p.circle(x='x_values', y='y_values', source=source, size=20, color='navy',alpha=0.5)
@@ -251,8 +251,17 @@ plot.add_glyph(source, circle)
 from bokeh.plotting import show
 show(plot)
 ```
+当然也可以像第一章通过python的io操作或者output_file("Demo1.html")输出到文件。
 
-### 第四步，增加js回调函数
+### 第五步，增加布局
+
+### 第六步，增加Label
+
+### 第七步，增加Hover
+
+### 第八步，增加Widgets
+
+### 第九步，增加数据过滤
 
 ## Chapter Three---在Jupyter上作图
 在Jupyter上使用Bokeh，除了可以更多人分享，还可以使用ipywidgets实现真正意义上的交互，可以在python代码中通过pandas过滤数据来更新页面，而不是一次性将数据写到html。
