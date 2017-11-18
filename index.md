@@ -129,7 +129,7 @@ print(script)
 print("---------------------------------------------")
 print(div)
 ```
-    以上输出内容如下:
+以上输出内容如下:
 ```html
 <script type="text/javascript">
     (function() {
