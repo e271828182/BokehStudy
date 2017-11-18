@@ -21,6 +21,7 @@ show(p)
 以上代码得到的图形如下
 
 ![Image](./ChapterOne/1.PNG)
+
 查看页面源码（或者打开生成的html文件，浏览器地址栏指出了文件路径），可以发现
 ```html
 <!DOCTYPE html>
