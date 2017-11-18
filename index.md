@@ -212,21 +212,46 @@ with open('demo2.html', 'w') as f:
 ```
 ## Chapter Two---来绘制一个图
 ### 第一步，准备数据源
-有两种数据源，ColumnDataSource和GeoJSONDataSource，分别用来存放一般图形数据和地图数据。先来看看ColumnDataSource，可以通过pandas的DateFrame来构建
+有两种数据源，ColumnDataSource和GeoJSONDataSource，分别用来存放一般图形数据和地图数据。先来看看ColumnDataSource，可以通过data参数接收一个dict对象，也可以通过pandas的DateFrame来构建。每个数据集都有名字，通过DateFrame创建则名字为其每列的名字，没有列名，则index为其列名（However, if the index name (or any subname of a MultiIndex) is None, then the CDS will have a column generically named index for the index）。
+有名字就可以让多个图形和工具共用同一份数据。
+```python
+from bokeh.models import ColumnDataSource
+
+data = {'x_values': [1, 2, 3, 4, 5],
+        'y_values': [6, 7, 2, 3, 6]}
+
+source = ColumnDataSource(data=data)
+# 通过DataFrame直接创建
+source = ColumnDataSource(df)
+```
 
 ### 第二步，准备画板
 figure函数或者Figure对象选用一个即可，获得Figure对象，之后的图形都是在该图形上叠加
 ```python
 from bokeh.plotting import figure, Figure
+
 plot = figure(plot_width=400, plot_height=400)
 plot = Figure(plot_width=400, plot_height=400)
 ```
 ### 第三步，画图
-
+两种形式，第一种是plot调用方法circle，可以指定source
 ```python
-
+p.circle(x='x_values', y='y_values', source=source, size=20, color='navy',alpha=0.5)
 
 ```
+第二种先定义circle对象，再使用plot调用add_glyph时指定source
+```python
+circle = Circle(x='x_values', y='y_values', fill_color='navy', size=20, fill_alpha=0.5)
+plot.add_glyph(source, circle)
+```
+两种方式，第一种比较简洁，第二种更具面向对象风格。第一种参数更加丰富，比如颜色可以传入line_color='red', fill_color='navy'，color='blue'。如果只指定color，则line_color和fill_color默认与color一样。如果单独指定line_color和fill_color，会覆盖color指定。第二种则没有color这个参数
+### 第四步，展示
+调用show函数就可以实现，jupyter需要先调用output_notebook
+```python
+from bokeh.plotting import show
+show(plot)
+```
+
 ### 第四步，增加js回调函数
 
 ## Chapter Three---在Jupyter上作图

@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
-from bokeh.plotting import figure, Figure, output_file, show
-from bokeh.embed import components
+from bokeh.plotting import Figure, show
+from bokeh.models import Circle, ColumnDataSource
 
-# 定义一个图形布局，指定宽高，之后的元素都画在这张图上
 p = Figure(plot_width=400, plot_height=400)
+data = {'x_values': [1, 2, 3, 4, 5],
+        'y_values': [6, 7, 2, 3, 6]}
 
-# 在坐标轴上画出圆圈，指定坐标大小，颜色和透明度（alpha）
-p.circle([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], size=20, color="navy", alpha=0.5)
+source = ColumnDataSource(data=data)
+
+# circle = Circle(x='x_values', y='y_values', line_color='red', fill_color='navy', size=20, fill_alpha=0.5)
+# p.add_glyph(source, circle)
+
+p.circle(x='x_values', y='y_values', source=source, size=20,line_color='red', fill_color='navy', color='blue' ,alpha=0.5)
+
 
 show(p)
