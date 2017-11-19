@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from bokeh.plotting import Figure, show
-from bokeh.models import Circle, ColumnDataSource, LabelSet, Legend, LegendItem, GlyphRenderer, HoverTool
-
+from bokeh.models import Circle, ColumnDataSource, LabelSet, Legend, LegendItem, GlyphRenderer, HoverTool, CustomJS,Select
+from bokeh.layouts import column
 
 hover = HoverTool(
         tooltips=[
@@ -22,11 +22,39 @@ data = {'x_values': [1, 2, 3, 4, 5],
 source = ColumnDataSource(data=data)
 labels = LabelSet(x='x_values', y='y_values', x_offset=0, y_offset=10, text='label_value', source=source)
 p.add_layout(labels)
+
+
+
 #
 # circle = Circle(x='x_values', y='y_values', line_color='red', fill_color='navy', size=20, fill_alpha=0.5)
 # p.add_glyph(source, circle)
 
 p.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=0.5, legend="xValue")
+
+p2 = Figure(plot_width=400, plot_height=400, tools=[hover])
+p2.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=0.5, legend="xValue")
+
+labels2 = LabelSet(x='x_values', y='y_values', x_offset=0, y_offset=10, text='label_value', source=source)
+p2.add_layout(labels2)
+
+
+callback = CustomJS(args=dict(source=source), code="""
+    var data = source.data;
+    var f = cb_obj.value;
+    x = data['x_values'];
+    y = data['y_values'];
+    console.log(f);
+    for (i = 0; i < x.length; i++) {
+            y[i] = x[i]*f;
+    }
+    source.change.emit();
+""")
+options = source.data["x_values"]
+select = Select(title="Option:", value="1", options=[str(x) for x in options])
+select.js_on_change('value', callback)
+layout = column(select, p, p2)
+
+show(layout)
 # labels = LabelSet(x='x_values', y='y_values', x_offset=0, y_offset=10, text='y_values', source=source)
 # p.add_layout(labels)
 # circle2 = Circle(line_color='red', fill_color='navy', size=10)
@@ -41,5 +69,4 @@ p.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=
 # ("x轴", "@x_values"),
 # ("y值", "@y_values{0.2f}" )]
 
-
-show(p)
+# show(column(p, p2))

@@ -257,7 +257,17 @@ show(plot)
 当然也可以像第一章通过python的io操作或者output_file("Demo1.html")输出到文件。
 
 ### 第五步，增加布局
-可以同时画多个图形，然后根据布局来布置图形
+可以同时画多个图形，然后根据布局来布置图形,按照列排列column，按照行排列row，按照网格排列gridplot。如果中间需要有缺省位置，则用None代替，如gridplot([[p1, p2], [None, p3]])
+```python
+p2 = Figure(plot_width=400, plot_height=400, tools=[hover])
+p2.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=0.5, legend="xValue")
+
+labels2 = LabelSet(x='x_values', y='y_values', x_offset=0, y_offset=10, text='label_value', source=source)
+p2.add_layout(labels2)
+
+show(column(p, p2))
+
+```
 
 ### 第六步，增加Label
 通过LabelSet增加标签，source指定与之前一样，text为要显示的值
@@ -320,10 +330,34 @@ hover = HoverTool(
 
 p = Figure(plot_width=400, plot_height=400, tools=[hover])
 ```
-
 ### 第九步，增加Widgets
+我们来看看js实现交互，我们生成的都是静态页面，页面生成后，数据都埋在了docs_json变量中，如果需要再改变图形，就要根据用户选则改变数据来展现。
+需要注意的是，select这里的参数必须是str类型的。
+js代码中，cb_obj.value就可以获取到用户选择的值，然后根据该值改变数据源，以达到改变图形的效果。
+这种方式自己写回调函数，对于复杂的数据处理很不方便，并且数据一开始就埋在浏览器中，可能浪费浏览器大量内存。后面将会讲到使用jupyter实现交互，则可以在python中利用pandas处理数据。
 
-### 第十步，增加数据过滤
+```python
+callback = CustomJS(args=dict(source=source), code="""
+    var data = source.data;
+    var f = cb_obj.value;
+    x = data['x_values'];
+    y = data['y_values'];
+    console.log(f);
+    for (i = 0; i < x.length; i++) {
+            y[i] = x[i]*f;
+    }
+    source.change.emit();
+""")
+options = source.data["x_values"]
+select = Select(title="Option:", value="1", options=[str(x) for x in options])
+select.js_on_change('value', callback)
+layout = column(select, p, p2)
+
+show(layout)
+```
+### 第十步，增加坐标轴
+
+### 第十一步，增加数据过滤
 
 ## Chapter Three-在Jupyter上作图
 在Jupyter上使用Bokeh，除了可以更多人分享，还可以使用ipywidgets实现真正意义上的交互，可以在python代码中通过pandas过滤数据来更新页面，而不是一次性将数据写到html。
