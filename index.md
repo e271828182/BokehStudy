@@ -384,7 +384,3 @@ output_notebook()
 pip install ipywidgets
 jupyter nbextension enable --py widgetsnbextension
 ```
-
-## Chapter Four-自定义对象
-
-## Chapter Five-使用Bokeh server
