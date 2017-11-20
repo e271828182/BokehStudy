@@ -211,6 +211,9 @@ with open('demo2.html', 'w') as f:
 
 ```
 ## Chapter Two-来绘制一个图
+先了解下图中的各个元素
+![Image](./ChapterTwo/2.PNG)
+[Demo2](./ChapterTwo/Demo2.html)
 ### 第一步，准备数据源
 有两种数据源，ColumnDataSource和GeoJSONDataSource，分别用来存放一般图形数据和地图数据。先来看看ColumnDataSource，可以通过data参数接收一个dict对象，也可以通过pandas的DateFrame来构建。每个数据集都指定key的名字，通过DateFrame创建则key为其每列的列名，没有列名，则index为其列名（However, if the index name (or any subname of a MultiIndex) is None, then the CDS will have a column generically named index for the index）。
 有了key就可以让多个图形和工具共用同一份数据。
@@ -356,9 +359,17 @@ layout = column(select, p, p2)
 show(layout)
 ```
 ### 第十步，增加坐标轴
+```python
+line = Line(x='x_values',y='y_values')
+p.extra_y_ranges = {"second_y": Range1d(start=0, end=max(source.data["y_values"]), max_interval=1)}
+p.add_glyph(source, line, y_range_name='second_y',name='人效')
+second_y = LinearAxis(y_range_name='second_y')
+p.add_layout(second_y, 'right')
 
-### 第十一步，增加数据过滤
-
+# 增加坐标轴格式
+p.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+p.yaxis[1].formatter = NumeralTickFormatter(format="0.2f%")
+```
 ## Chapter Three-在Jupyter上作图
 在Jupyter上使用Bokeh，除了可以更多人分享，还可以使用ipywidgets实现真正意义上的交互，可以在python代码中通过pandas过滤数据来更新页面，而不是一次性将数据写到html。
 首先需要执行output_notebook指定图形输出到jupyter
@@ -371,6 +382,7 @@ output_notebook()
 pip install ipywidgets
 jupyter nbextension enable --py widgetsnbextension
 ```
+
 ## Chapter Four-自定义对象
 
 ## Chapter Five-使用Bokeh server

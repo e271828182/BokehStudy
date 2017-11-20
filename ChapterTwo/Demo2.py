@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from bokeh.plotting import Figure, show
-from bokeh.models import Circle, ColumnDataSource, LabelSet, Legend, LegendItem, GlyphRenderer, HoverTool, CustomJS,Select
+from bokeh.models import Circle, ColumnDataSource, LabelSet,\
+    Legend, LegendItem, GlyphRenderer, HoverTool, CustomJS, Select, Line, LinearAxis, NumeralTickFormatter, Range1d
 from bokeh.layouts import column
 
 hover = HoverTool(
@@ -52,7 +53,18 @@ callback = CustomJS(args=dict(source=source), code="""
 options = source.data["x_values"]
 select = Select(title="Option:", value="1", options=[str(x) for x in options])
 select.js_on_change('value', callback)
+
+line = Line(x='x_values',y='y_values')
+p.extra_y_ranges = {"second_y": Range1d(start=0, end=max(source.data["y_values"]), max_interval=1)}
+p.add_glyph(source, line, y_range_name='second_y',name='人效')
+second_y = LinearAxis(y_range_name='second_y')
+p.add_layout(second_y, 'right')
+p.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+p.yaxis[1].formatter = NumeralTickFormatter(format="0.2f%")
+
 layout = column(select, p, p2)
+
+
 
 show(layout)
 # labels = LabelSet(x='x_values', y='y_values', x_offset=0, y_offset=10, text='y_values', source=source)
