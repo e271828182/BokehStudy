@@ -212,7 +212,9 @@ with open('demo2.html', 'w') as f:
 ```
 ## Chapter Two-来绘制一个图
 先了解下图中的各个元素
+
 ![Image](./ChapterTwo/2.PNG)
+
 [Demo2](./ChapterTwo/Demo2.html)
 ### 第一步，准备数据源
 有两种数据源，ColumnDataSource和GeoJSONDataSource，分别用来存放一般图形数据和地图数据。先来看看ColumnDataSource，可以通过data参数接收一个dict对象，也可以通过pandas的DateFrame来构建。每个数据集都指定key的名字，通过DateFrame创建则key为其每列的列名，没有列名，则index为其列名（However, if the index name (or any subname of a MultiIndex) is None, then the CDS will have a column generically named index for the index）。
