@@ -1,5 +1,5 @@
 # 一起学习bokeh
-Bokeh可以基于python自动生成js代码，用来展现各式各样的图形。当然也可以通过js来直接操控BokehJS，但是数据处理是python的强项。以下可以通过十分钟，教你用Bokeh画图。跟我一样，你只需要了解一点python语法。
+Bokeh可以基于python自动生成js代码，用来展现各式各样的图形。初学者可以花几分钟开一下，或许帮你少踩坑。
 ## Chapter One-Bokeh做了什么
 ```python
 # -*- coding: utf-8 -*-
@@ -383,4 +383,72 @@ output_notebook()
 ```shell
 pip install ipywidgets
 jupyter nbextension enable --py widgetsnbextension
+```
+在第二章我们已经得到图形了，美中不足的是交互需要自己写js代码完成，现在我们就把Widgets换成ipywidgets，这样我们就可以在python里面利用pandas来组织数据。
+改造只要三步，第一，把之前画图的代码封装到函数里面。第二，定义ipywidgets。第三，绑定函数和相应的ipywidgets。
+```python
+# -*- coding: UTF-8 -*-
+import pandas as pd
+from bokeh.plotting import Figure, show
+from bokeh.models import Circle, ColumnDataSource, LabelSet,\
+    Legend, LegendItem, GlyphRenderer, HoverTool, CustomJS, Select, Line, LinearAxis, NumeralTickFormatter, Range1d
+from bokeh.layouts import column
+import ipywidgets as widgets
+from ipywidgets import interact, Layout
+from bokeh.io import push_notebook, output_notebook
+
+value = [6, 7, 2, 3, 6]
+
+def make_plot(multi):
+    y_value = [multi*y for y in value]
+    hover = HoverTool(
+            tooltips=[
+                ("x轴", "@x_values"),
+                ("y值", "@y_values{0.2f}" )
+                ],
+            mode = "mouse",
+            formatters={
+            'date'      : 'datetime', # use 'datetime' formatter for 'date' field
+            'adj close' : 'printf',   # use 'printf' formatter for 'adj close' field
+            }
+    )
+    p = Figure(plot_width=400, plot_height=400, tools=[hover])
+    data = {'x_values': [1, 2, 3, 4, 5],
+            'y_values': y_value,
+            'label_value': ["%d%%" % (100*y) for y in y_value]}
+
+    source = ColumnDataSource(data=data)
+    labels = LabelSet(x='x_values', y='y_values', x_offset=0, y_offset=10, text='label_value', source=source)
+    p.add_layout(labels)
+
+    p.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=0.5, legend="xValue")
+
+    p2 = Figure(plot_width=400, plot_height=400, tools=[hover])
+    p2.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=0.5, legend="xValue")
+
+    labels2 = LabelSet(x='x_values', y='y_values', x_offset=0, y_offset=10, text='label_value', source=source)
+    p2.add_layout(labels2)
+
+    line = Line(x='x_values',y='y_values')
+    p.extra_y_ranges = {"second_y": Range1d(start=0, end=max(source.data["y_values"]), max_interval=1)}
+    p.add_glyph(source, line, y_range_name='second_y',name='人效')
+    second_y = LinearAxis(y_range_name='second_y')
+    p.add_layout(second_y, 'right')
+    p.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+    p.yaxis[1].formatter = NumeralTickFormatter(format="0.2f%")
+
+    layout = column(p, p2)
+
+    show(layout)
+    
+# 设置输出到jupyter
+output_notebook()
+    
+select_multi = widgets.Dropdown(
+options=[1, 2, 3],
+value=1,
+description=u'乘数:',
+disabled=False,
+)
+interact(make_plot, multi=select_multi, continuous_update=False)
 ```
