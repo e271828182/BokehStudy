@@ -30,7 +30,16 @@ p.add_layout(labels)
 # circle = Circle(x='x_values', y='y_values', line_color='red', fill_color='navy', size=20, fill_alpha=0.5)
 # p.add_glyph(source, circle)
 
-p.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=0.5, legend="xValue")
+c = p.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=0.5, legend="xValue")
+
+
+legend = Legend(items=[
+    ("xValue"   , [c])
+], location=(0, -30))
+
+p.add_layout(legend, 'right')
+
+
 
 p2 = Figure(plot_width=400, plot_height=400, tools=[hover])
 p2.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=0.5, legend="xValue")

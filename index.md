@@ -297,13 +297,15 @@ p.circle(x='x_values', y='y_values', source=source, size=20, color='navy',alpha=
 p.legend.location = (0, 300)
 p.legend.orientation = "horizontal"
 ```
-第二种比较复杂，需要自己设置label和图标显示，还要与图形关联
-*（目前我还没有找出小图标的设置方法）*
+第二种是直接定义legend对象，然后再加入，这样做的好处是可以不遮挡图形
 ```python
-renderer = GlyphRenderer(glyph=circle)
-item = LegendItem(label="x_values", renderers=[renderer])
-legend = Legend(items=[item])
-p.add_layout(legend)
+c = p.circle(x='x_values', y='y_values', source=source, size=20,color='blue', alpha=0.5, legend="xValue")
+
+legend = Legend(items=[
+    ("xValue"   , [c])
+], location=(0, -30))
+
+p.add_layout(legend, 'right')
 ```
 ### 第八步，增加Hover
 hover在图形中属于tools的一种，增加hover也有两种方式
@@ -339,7 +341,8 @@ p = Figure(plot_width=400, plot_height=400, tools=[hover])
 我们来看看js实现交互，我们生成的都是静态页面，页面生成后，数据都埋在了docs_json变量中，如果需要再改变图形，就要根据用户选则改变数据来展现。
 需要注意的是，select这里的参数必须是str类型的。
 js代码中，cb_obj.value就可以获取到用户选择的值，然后根据该值改变数据源，以达到改变图形的效果。
-这种方式自己写回调函数，对于复杂的数据处理很不方便，并且数据一开始就埋在浏览器中，可能浪费浏览器大量内存。后面将会讲到使用jupyter实现交互，则可以在python中利用pandas处理数据。
+这种方式自己写回调函数，对于复杂的数据处理很不方便，并且数据一开始就埋在浏览器中，可能浪费浏览器大量内存。(It is critical to note that no python code is ever executed when a CustomJS callback is used.)
+后面将会讲到使用jupyter实现交互，则可以在python中利用pandas处理数据。
 
 ```python
 callback = CustomJS(args=dict(source=source), code="""
@@ -452,3 +455,7 @@ disabled=False,
 )
 interact(make_plot, multi=select_multi, continuous_update=False)
 ```
+## Chapter Four-使用bokeh serve
+除了jupyter可以调用python代码，再就是bokeh server了，具体可以参考官网的例子。
+运行时指定端口，然后就可以通过nginx来转发
+bokeh serve myapp.py --port 5100
