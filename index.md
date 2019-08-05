@@ -1,4 +1,4 @@
-# 欢迎，一起学习bokeh
+# 一起学习bokeh
 Bokeh可以基于python自动生成js代码，用来展现各式各样的图形。初学者可以花几分钟开一下，或许帮你少踩坑。
 ## Chapter One-Bokeh做了什么
 ```python
